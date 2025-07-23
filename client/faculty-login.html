@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login | SPAV-SmartEvent</title>
+    <title>Faculity Login | SPAV-SmartEvent</title>
     <style>
         /* Reusing the styles from your first index.html for consistency */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
@@ -46,7 +46,7 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>Student Portal</h1>
+            <h1>Faculity Portal</h1>
             <p>Login or create an account to continue</p>
         </header>
         <main class="form-container">
@@ -66,6 +66,7 @@
                 <button type="submit" class="submit-btn">Login</button>
             </form>
             <form id="signup-form" class="form">
+                <input type="hidden" id="login-role" value="faculty">
                  <div class="input-group">
                     <label for="signup-name">Full Name</label>
                     <input type="text" id="signup-name" required>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard | SPAV-SmartEvent</title>
-    <script>
+    <!-- <script>
     // Get the token from localStorage
     const token = localStorage.getItem('authToken');
     // Get the role of the logged-in user
@@ -29,6 +29,38 @@
         // Redirect to the main page
         window.location.href = 'index.html';
     });
+</script> -->
+<script>
+    // Function to check authentication and authorization
+    const checkAuth = () => {
+        const token = localStorage.getItem('authToken');
+        const userRole = localStorage.getItem('userRole');
+        
+        // This logic is more robust for finding the required role from the filename
+        const pageName = window.location.pathname.split("/").pop();
+        const requiredRole = pageName.split('-')[0];
+
+        if (!token || userRole !== requiredRole) {
+            // Clear any partial login data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userRole');
+            
+            alert('Access Denied. Please log in.');
+            window.location.href = 'index.html';
+        }
+    };
+
+    // Check the URL to see if we just came from the login page
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromLogin = urlParams.get('fromLogin');
+
+    if (fromLogin === 'true') {
+        // If we just logged in, wait a tiny moment for localStorage to be ready.
+        setTimeout(checkAuth, 50); // 50 milliseconds is plenty of time
+    } else {
+        // If the user navigated here directly, check immediately.
+        checkAuth();
+    }
 </script>
 
     <style>
