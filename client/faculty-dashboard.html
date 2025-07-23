@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard | SPAV-SmartEvent</title>
+    <script>
+    // Get the token from localStorage
+    const token = localStorage.getItem('authToken');
+    // Get the role of the logged-in user
+    const userRole = localStorage.getItem('userRole');
+    
+    // Get the role required for this page from its filename
+    // e.g., "student-dashboard.html" -> "student"
+    const requiredRole = window.location.pathname.split('-')[0].replace('/', '');
+
+    // If there is no token OR the user's role doesn't match the page, redirect them.
+    if (!token || userRole !== requiredRole) {
+        alert('Access Denied. Please log in.');
+        // Redirect to the main role selection page
+        window.location.href = 'index.html';
+    }
+
+    document.getElementById('logout-button').addEventListener('click', () => {
+        // Remove the token and role from storage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userRole');
+
+        // Redirect to the main page
+        window.location.href = 'index.html';
+    });
+</script>
+
+    <style>
+        /* Google Fonts Import */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        /* --- Global Styles & Resets --- */
+        :root {
+            /* Faculty Theme Colors (Orange) */
+            --primary-color: #e67e22;
+            --primary-light: #f39c12;
+            --secondary-color: #fdf5e6; /* Light orange background for headers */
+            --background-color: #fbfaf8;
+            --text-dark: #24292e;
+            --text-light: #6a737d;
+            --white-color: #fff;
+            --border-color: #e1e4e8;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #3498db;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--white-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .sidebar-nav ul {
+            list-style-type: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .sidebar-nav li a .icon {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            background-color: var(--primary-light);
+            color: var(--white-color);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background-color: #fde2e4;
+            color: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-btn .icon {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #f7d1d3;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .menu-toggle {
+            display: none; /* Hidden on desktop */
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 1001; /* Ensure it's clickable */
+        }
+
+        /* --- Content Sections --- */
+        .content-section {
+            display: none; /* Hidden by default */
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* --- Dashboard Cards --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--white-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .card .description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        /* --- Table Styling --- */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--white-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .data-table th, .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #fdfaf6;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--white-color);
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+        
+        .btn-success { background-color: var(--success-color); }
+        .btn-warning { background-color: var(--warning-color); color: var(--text-dark); }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-primary { background-color: var(--primary-color); }
+        .btn-info { background-color: var(--info-color); }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .status-approved { background-color: #eaf6ec; color: var(--success-color); }
+        .status-pending { background-color: #fff8e1; color: #f57c00; }
+        .status-rejected { background-color: #fde2e4; color: var(--danger-color); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100%;
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Faculty Portal</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link active" data-target="dashboard">
+                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></span>Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-target="manage-events">
+                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span>Manage Events</a></li>
+                <li><a href="#" class="nav-link" data-target="registrations">
+                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>Student Registrations</a></li>
+                <li><a href="#" class="nav-link" data-target="attendance">
+                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg></span>Manage Attendance</a></li>
+            </ul>
+        </nav>
+        <button class="logout-btn" onclick="window.location.href='index.html'">
+             <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></span>Logout
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1 id="page-title">Dashboard</h1>
+            <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <h2>Welcome back, Faculty!</h2>
+            <p class="description" style="margin-bottom: 20px;">Here’s a summary of your event management activities.</p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Events Created</h3>
+                    <div class="value">8</div>
+                    <p class="description">Total events you have proposed.</p>
+                </div>
+                <div class="card">
+                    <h3>Pending Approval</h3>
+                    <div class="value">2</div>
+                    <p class="description">Events waiting for HOD's review.</p>
+                </div>
+                <div class="card">
+                    <h3>Upcoming Events</h3>
+                    <div class="value">3</div>
+                    <p class="description">Approved events in the next 30 days.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manage Events Section -->
+        <section id="manage-events" class="content-section">
+            <div class="page-header">
+                <h2>Your Events</h2>
+                <button class="btn btn-primary">Create New Event</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI & Machine Learning Workshop</td>
+                        <td>2025-08-15</td>
+                        <td><span class="status-badge status-approved">Approved</span></td>
+                        <td><button class="btn btn-info">View</button> <button class="btn btn-warning">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Guest Lecture on DevOps</td>
+                        <td>2025-09-05</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td><button class="btn btn-info">View</button> <button class="btn btn-warning">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Cybersecurity Seminar</td>
+                        <td>2025-07-28</td>
+                        <td><span class="status-badge status-rejected">Rejected</span></td>
+                        <td><button class="btn btn-info">View</button> <button class="btn btn-warning">Edit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Student Registrations Section -->
+        <section id="registrations" class="content-section">
+            <h2>Student Registrations</h2>
+             <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Registered On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI & Machine Learning Workshop</td>
+                        <td>Ravi Kumar</td>
+                        <td>STU12345</td>
+                        <td>2025-07-20</td>
+                    </tr>
+                    <tr>
+                        <td>AI & Machine Learning Workshop</td>
+                        <td>Priya Sharma</td>
+                        <td>STU12346</td>
+                        <td>2025-07-21</td>
+                    </tr>
+                    <tr>
+                        <td>Guest Lecture on DevOps</td>
+                        <td>Amit Singh</td>
+                        <td>STU12347</td>
+                        <td>2025-07-22</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Manage Attendance Section -->
+        <section id="attendance" class="content-section">
+            <h2>Manage Attendance</h2>
+            <p class="description">Select an event to view and manage student attendance.</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ravi Kumar</td>
+                        <td>STU12345</td>
+                        <td><span style="color: var(--success-color); font-weight: 600;">Present</span></td>
+                        <td><button class="btn btn-danger">Mark Absent</button></td>
+                    </tr>
+                     <tr>
+                        <td>Priya Sharma</td>
+                        <td>STU12346</td>
+                        <td><span style="color: var(--danger-color); font-weight: 600;">Absent</span></td>
+                        <td><button class="btn btn-success">Mark Present</button></td>
+                    </tr>
+                    <tr>
+                        <td>Amit Singh</td>
+                        <td>STU12347</td>
+                        <td><span style="color: var(--success-color); font-weight: 600;">Present</span></td>
+                        <td><button class="btn btn-danger">Mark Absent</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const pageTitle = document.getElementById('page-title');
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+
+            function navigateTo(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.target === targetId) {
+                        link.classList.add('active');
+                        pageTitle.textContent = link.textContent.trim();
+                    }
+                });
+
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+                
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('open');
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.dataset.target;
+                    navigateTo(targetId);
+                });
+            });
+
+            // Event listener for mobile menu toggle
+            menuToggle.addEventListener('click', (e) => {
+                // This is the fix: stop the event from bubbling up to the main content
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+            });
+            
+            // Close sidebar if clicking outside of it on mobile
+            document.querySelector('.main-content').addEventListener('click', () => {
+                if (sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            navigateTo('dashboard');
+        });
+    </script>
+</body>
+</html>
