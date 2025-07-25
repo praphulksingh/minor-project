@@ -3,58 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculity Login | SPAV-SmartEvent</title>
+    <title>Faculty Login | SPAV-SmartEvent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reusing the styles from your first index.html for consistency */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         :root {
-            --primary-color: #4a69bd; --primary-dark: #3c5aa6; --secondary-color: #f6f8fa;
-            --text-dark: #333; --text-light: #777; --white-color: #fff; --border-color: #e1e4e8;
+            --primary-color: #4a69bd;
+            --primary-dark: #3c5aa6;
+            --secondary-color: #f6f8fa;
+            --text-dark: #333;
+            --text-light: #777;
+            --white-color: #fff;
+            --border-color: #e1e4e8;
             --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif; background: linear-gradient(120deg, #f6f8fa, #e9eef7);
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f6f8fa, #e9eef7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
+
         .container {
-            width: 100%; max-width: 450px; background-color: var(--white-color);
-            border-radius: 12px; box-shadow: var(--box-shadow); overflow: hidden; margin: 20px;
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--white-color);
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin: 20px;
         }
+
         .header {
-            background-color: var(--primary-color); color: var(--white-color);
-            padding: 25px 20px; text-align: center;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 25px 20px;
+            text-align: center;
         }
-        .header h1 { font-size: 1.8rem; margin-bottom: 5px; }
-        .header p { font-size: 0.9rem; opacity: 0.9; }
-        .form-container { padding: 30px 40px; }
-        .toggle-btns { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 25px; }
-        .toggle-btn { flex: 1; padding: 12px; border: none; background: var(--white-color); color: var(--text-light); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .toggle-btn.active { background-color: var(--primary-color); color: var(--white-color); }
-        .form { display: none; }
-        .form.active { display: block; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
-        .input-group input { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; }
-        .input-group input:focus { outline: none; border-color: var(--primary-color); }
-        .submit-btn { width: 100%; padding: 15px; background-color: var(--primary-color); color: var(--white-color); border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s ease; }
-        .submit-btn:hover { background-color: var(--primary-dark); }
-        .links { text-align: center; margin-top: 20px; }
-        .links a { color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 30px 40px;
+        }
+
+        .toggle-btns {
+            display: flex;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: var(--white-color);
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Faculity Portal</h1>
+            <h1>Faculty Portal</h1>
             <p>Login or create an account to continue</p>
         </header>
+
         <main class="form-container">
             <div class="toggle-btns">
                 <button id="show-login-btn" class="toggle-btn active">Login</button>
                 <button id="show-signup-btn" class="toggle-btn">Signup</button>
             </div>
+            
             <form id="login-form" class="form active">
+                <input type="hidden" id="login-role" value="faculty">
                 <div class="input-group">
                     <label for="login-email">Email</label>
                     <input type="email" id="login-email" required>
@@ -65,9 +174,10 @@
                 </div>
                 <button type="submit" class="submit-btn">Login</button>
             </form>
+            
             <form id="signup-form" class="form">
-                <input type="hidden" id="login-role" value="faculty">
-                 <div class="input-group">
+                <input type="hidden" id="signup-role" value="faculty">
+                <div class="input-group">
                     <label for="signup-name">Full Name</label>
                     <input type="text" id="signup-name" required>
                 </div>
@@ -76,32 +186,43 @@
                     <input type="email" id="signup-email" required>
                 </div>
                 <div class="input-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" required>
+                </div>
+                <div class="input-group">
                     <label for="signup-password">Password</label>
                     <input type="password" id="signup-password" required>
                 </div>
                 <button type="submit" class="submit-btn">Create Account</button>
             </form>
-             <div class="links">
+            
+            <div class="links">
                 <a href="index.html">&larr; Back to Role Selection</a>
             </div>
         </main>
     </div>
 
-    <!-- Link the auth.js file -->
     <script src="js/auth.js"></script>
     <script>
-        // Toggle script for login/signup forms
-        const showLoginBtn = document.getElementById('show-login-btn');
-        const showSignupBtn = document.getElementById('show-signup-btn');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        showLoginBtn.addEventListener('click', () => {
-            loginForm.classList.add('active'); signupForm.classList.remove('active');
-            showLoginBtn.classList.add('active'); showSignupBtn.classList.remove('active');
-        });
-        showSignupBtn.addEventListener('click', () => {
-            signupForm.classList.add('active'); loginForm.classList.remove('active');
-            showSignupBtn.classList.add('active'); showLoginBtn.classList.remove('active');
+        document.addEventListener('DOMContentLoaded', () => {
+            const showLoginBtn = document.getElementById('show-login-btn');
+            const showSignupBtn = document.getElementById('show-signup-btn');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+
+            showLoginBtn.addEventListener('click', () => {
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                showLoginBtn.classList.add('active');
+                showSignupBtn.classList.remove('active');
+            });
+
+            showSignupBtn.addEventListener('click', () => {
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+                showSignupBtn.classList.add('active');
+                showLoginBtn.classList.remove('active');
+            });
         });
     </script>
 </body>

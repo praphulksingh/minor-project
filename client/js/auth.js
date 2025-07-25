@@ -25,7 +25,6 @@ async function handleLogin(e) {
     e.preventDefault(); // Prevent the form from reloading the page
 
     // Get user inputs from the form elements.
-    // Ensure your HTML has <input id="login-email"> and <input id="login-password">.
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
@@ -74,11 +73,27 @@ async function handleSignup(e) {
     e.preventDefault(); // Prevent the form from reloading the page
 
     // Get user details from the signup form.
-    // Ensure your HTML has the correct IDs for each input.
     const name = document.getElementById('signup-name').value;
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
-    const role = document.getElementById('signup-role').value; // Ensure your <select> has id="signup-role"
+    const role = document.getElementById('signup-role').value;
+
+    // Create the base payload with common fields
+    const payload = {
+        name,
+        email,
+        password,
+        role
+    };
+
+    // THIS IS THE FIX: Add role-specific fields to the payload
+    if (role === 'student') {
+        // Ensure your student HTML has an input with id="student-id"
+        payload.studentId = document.getElementById('student-id').value;
+    } else if (role === 'faculty' || role === 'hod') {
+        // Ensure your faculty/HOD HTML has an input with id="department"
+        payload.department = document.getElementById('department').value;
+    }
 
     if (!name || !email || !password || !role) {
         alert('Please fill out all fields to sign up.');
@@ -86,13 +101,13 @@ async function handleSignup(e) {
     }
 
     try {
-        // Send signup request to the backend
+        // Send signup request to the backend with the complete payload
         const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, email, password, role }),
+            body: JSON.stringify(payload), // Send the updated payload
         });
 
         const data = await response.json();
