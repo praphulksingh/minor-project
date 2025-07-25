@@ -1,4 +1,4 @@
-// This file will handle login/signup logic and API calls.
+// This file handles login/signup logic and real API calls to the backend.
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
@@ -13,84 +13,100 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// The base URL for your backend API.
+// Ensure your server is running on this port.
+const API_BASE_URL = 'http://localhost:5000';
+
 /**
- * Handles the login form submission.
+ * Handles the login form submission by calling the backend API.
  * @param {Event} e - The form submission event.
  */
 async function handleLogin(e) {
     e.preventDefault(); // Prevent the form from reloading the page
 
-    console.log('Login form submitted');
+    // Get user inputs from the form elements.
+    // Ensure your HTML has <input id="login-email"> and <input id="login-password">.
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-    // Get the role from the hidden input field in the form.
-    const roleInput = document.getElementById('login-role');
-    
-    if (!roleInput) {
-        alert('Error: Role input field is missing from the login form.');
+    if (!email || !password) {
+        alert('Please fill in both email and password.');
         return;
     }
 
-    const userRole = roleInput.value;
-    
-    // --- SIMULATION ---
-    // In a real app, you would send the email and password to your backend API.
-    // const email = document.getElementById('login-email').value;
-    // const password = document.getElementById('login-password').value;
-    // The backend would verify the user and return a token and role.
+    try {
+        // Send login request to the backend
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
 
-    const fakeToken = `fake-jwt-token-for-${userRole}`;
+        const data = await response.json();
 
-    // Save token and role to localStorage to persist the session.
-    localStorage.setItem('authToken', fakeToken);
-    localStorage.setItem('userRole', userRole);
+        // Check if the request was successful (status code 200-299)
+        if (response.ok) {
+            // Save token and role from the server's response to localStorage
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userRole', data.user.role);
 
-    // Redirect to the correct dashboard, adding a flag to the URL.
-    alert(`Simulating successful login for ${userRole}. Redirecting...`);
-    window.location.href = `${userRole}-dashboard.html?fromLogin=true`;
+            // Redirect to the correct dashboard
+            alert(data.message); // e.g., "Logged in successfully"
+            window.location.href = `${data.user.role}-dashboard.html?fromLogin=true`;
+        } else {
+            // Show a specific error message from the server
+            alert(`Login Failed: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Login Error:', error);
+        alert('An error occurred. Could not connect to the server. Please ensure the server is running.');
+    }
 }
 
 
 /**
- * Handles the signup form submission.
+ * Handles the signup form submission by calling the backend API.
  * @param {Event} e - The form submission event.
  */
 async function handleSignup(e) {
     e.preventDefault(); // Prevent the form from reloading the page
 
-    // Get user details from the signup form
+    // Get user details from the signup form.
+    // Ensure your HTML has the correct IDs for each input.
     const name = document.getElementById('signup-name').value;
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
-    const roleInput = document.getElementById('login-role'); // Get role from the hidden input
-    const role = roleInput ? roleInput.value : null;
+    const role = document.getElementById('signup-role').value; // Ensure your <select> has id="signup-role"
 
     if (!name || !email || !password || !role) {
         alert('Please fill out all fields to sign up.');
         return;
     }
 
-    // --- SIMULATION of sending data to the backend ---
-    console.log('--- Signup Data to be sent to backend ---');
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Role:', role);
-    console.log('-----------------------------------------');
+    try {
+        // Send signup request to the backend
+        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, password, role }),
+        });
 
-    // In a real application, you would make a fetch call to your signup API endpoint here.
-    // For example:
-    // const response = await fetch('/api/auth/signup', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ name, email, password, role }),
-    // });
-    // const data = await response.json();
-    // if (response.ok) { ... }
+        const data = await response.json();
 
-    // Show a success message and redirect to the login form
-    alert('Signup successful! You will now be redirected to the login page.');
-    
-    // This reloads the current page (e.g., student.html), which is what we want.
-    // It will default back to the login tab.
-    window.location.reload();
+        if (response.ok) {
+            alert('Signup successful! Please log in to continue.');
+            // Reload the page to clear the form and switch to the login tab
+            window.location.reload();
+        } else {
+            // Show a specific error message from the server (e.g., "User already exists")
+            alert(`Signup Failed: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Signup Error:', error);
+        alert('An error occurred. Could not connect to the server. Please ensure the server is running.');
+    }
 }

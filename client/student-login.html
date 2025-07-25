@@ -54,8 +54,9 @@
                 <button id="show-login-btn" class="toggle-btn active">Login</button>
                 <button id="show-signup-btn" class="toggle-btn">Signup</button>
             </div>
+            
+            <!-- Login Form -->
             <form id="login-form" class="form active">
-                <input type="hidden" id="login-role" value="student">
                 <div class="input-group">
                     <label for="login-email">Email</label>
                     <input type="email" id="login-email" required>
@@ -66,7 +67,12 @@
                 </div>
                 <button type="submit" class="submit-btn">Login</button>
             </form>
+
+            <!-- Signup Form -->
             <form id="signup-form" class="form">
+                 <!-- THIS IS THE FIX: A hidden input to specify the role for signup -->
+                 <input type="hidden" id="signup-role" value="student">
+
                  <div class="input-group">
                     <label for="signup-name">Full Name</label>
                     <input type="text" id="signup-name" required>
@@ -80,9 +86,9 @@
                     <input type="password" id="signup-password" required>
                 </div>
                 <button type="submit" class="submit-btn">Create Account</button>
-                
             </form>
-             <div class="links">
+            
+            <div class="links">
                 <a href="index.html">&larr; Back to Role Selection</a>
             </div>
         </main>
