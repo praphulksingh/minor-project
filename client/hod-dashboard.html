@@ -4,33 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOD Dashboard | SPAV-SmartEvent</title>
-    <!-- <script>
-    // Get the token from localStorage
-    const token = localStorage.getItem('authToken');
-    // Get the role of the logged-in user
-    const userRole = localStorage.getItem('userRole');
-    
-    // Get the role required for this page from its filename
-    // e.g., "student-dashboard.html" -> "student"
-    const requiredRole = window.location.pathname.split('-')[0].replace('/', '');
-
-    // If there is no token OR the user's role doesn't match the page, redirect them.
-    if (!token || userRole !== requiredRole) {
-        alert('Access Denied. Please log in.');
-        // Redirect to the main role selection page
-        window.location.href = 'index.html';
-    }
-    
-    document.getElementById('logout-button').addEventListener('click', () => {
-        // Remove the token and role from storage
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userRole');
-
-        // Redirect to the main page
-        window.location.href = 'index.html';
-    });
-</script> -->
-
 <script>
     // Function to check authentication and authorization
     const checkAuth = () => {
@@ -295,6 +268,32 @@
         .status-present { background-color: #eaf6ec; color: var(--success-color); }
         .status-absent { background-color: #fde2e4; color: var(--danger-color); }
 
+        /* New User Form Styles */
+        .user-creation-form {
+            background-color: var(--white-color);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .user-creation-form .input-group {
+            margin-bottom: 15px;
+        }
+        .user-creation-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .user-creation-form input,
+        .user-creation-form select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+
         /* --- Responsive Design --- */
         @media (max-width: 992px) {
             .sidebar {
@@ -333,7 +332,6 @@
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>HOD Portal</h2>
@@ -344,6 +342,8 @@
                     <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></span>Dashboard</a></li>
                 <li><a href="#" class="nav-link" data-target="approvals">
                     <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>Event Approvals</a></li>
+                <li><a href="#" class="nav-link" data-target="manage-users">
+                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M20 8l-1 5h-4l-1-5"></path></svg></span>Manage Users</a></li>
                 <li><a href="#" class="nav-link" data-target="attendance">
                     <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg></span>View Attendance</a></li>
                 <li><a href="#" class="nav-link" data-target="certificates">
@@ -355,14 +355,12 @@
         </button>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <header class="page-header">
             <h1 id="page-title">Dashboard</h1>
             <div class="menu-toggle" id="menu-toggle">&#9776;</div>
         </header>
 
-        <!-- Dashboard Section -->
         <section id="dashboard" class="content-section active">
             <h2>Welcome, HOD!</h2>
             <p class="description" style="margin-bottom: 20px;">Oversee and manage all departmental event activities.</p>
@@ -385,7 +383,6 @@
             </div>
         </section>
 
-        <!-- Event Approvals Section -->
         <section id="approvals" class="content-section">
             <h2>Event Approval Requests</h2>
             <table class="data-table">
@@ -424,8 +421,55 @@
                 </tbody>
             </table>
         </section>
+        
+        <section id="manage-users" class="content-section">
+            <h2>Create New User Account (Student/Faculty)</h2>
+            <p class="description" style="margin-bottom: 20px;">Use this form to provision new accounts for students or faculty.</p>
+            
+            <form id="create-user-form" class="user-creation-form">
+                <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    
+                    <div class="input-group">
+                        <label for="new-user-role">Account Type</label>
+                        <select id="new-user-role" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="student">Student</option>
+                        </select>
+                    </div>
 
-        <!-- View Attendance Section -->
+                    <div class="input-group">
+                        <label for="new-user-department">Department</label>
+                        <input type="text" id="new-user-department" placeholder="e.g., Computer Science" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="new-user-id">User ID (Login)</label>
+                        <input type="text" id="new-user-id" placeholder="e.g., FAC101 or STU5001" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="new-user-name">Full Name</label>
+                        <input type="text" id="new-user-name" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="new-user-email">Email</label>
+                        <input type="email" id="new-user-email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="new-user-password">Temporary Password</label>
+                        <input type="password" id="new-user-password" required minlength="6">
+                    </div>
+
+                </div>
+                <div class="input-group" style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Create Account</button>
+                </div>
+            </form>
+        </section>
+
         <section id="attendance" class="content-section">
             <h2>Overall Student Attendance</h2>
              <table class="data-table">
@@ -460,7 +504,6 @@
             </table>
         </section>
 
-        <!-- Generate Certificates Section -->
         <section id="certificates" class="content-section">
             <h2>Generate Participation Certificates</h2>
             <p class="description">Select a completed event to generate certificates for all attendees.</p>
@@ -499,13 +542,20 @@
     </main>
 
     <script>
+        const API_BASE_URL = 'http://localhost:5000';
+
         document.addEventListener('DOMContentLoaded', function () {
             const navLinks = document.querySelectorAll('.nav-link');
             const contentSections = document.querySelectorAll('.content-section');
             const pageTitle = document.getElementById('page-title');
             const menuToggle = document.getElementById('menu-toggle');
             const sidebar = document.getElementById('sidebar');
+            const userCreationForm = document.getElementById('create-user-form');
+            const roleSelect = document.getElementById('new-user-role');
+            const deptInput = document.getElementById('new-user-department');
 
+
+            // Function to handle navigation
             function navigateTo(targetId) {
                 navLinks.forEach(link => {
                     link.classList.remove('active');
@@ -527,6 +577,7 @@
                 }
             }
 
+            // Event listener for navigation links
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -537,7 +588,6 @@
 
             // Event listener for mobile menu toggle
             menuToggle.addEventListener('click', (e) => {
-                // This is the fix: stop the event from bubbling up to the main content
                 e.stopPropagation(); 
                 sidebar.classList.toggle('open');
             });
@@ -548,6 +598,81 @@
                     sidebar.classList.remove('open');
                 }
             });
+
+            // Logic to conditionally require/disable department field
+            roleSelect.addEventListener('change', () => {
+                const role = roleSelect.value;
+                // Student role should not require a department in the DB, 
+                // but the form keeps it simple and collects it anyway.
+                // However, Faculty/HOD definitely need it.
+                if (role === 'student' || role === '') {
+                    deptInput.removeAttribute('required');
+                } else {
+                    deptInput.setAttribute('required', 'required');
+                }
+            });
+
+            // HOD User Creation Logic
+            userCreationForm.addEventListener('submit', handleUserCreation);
+
+            async function handleUserCreation(e) {
+                e.preventDefault();
+
+                const token = localStorage.getItem('authToken');
+                const role = roleSelect.value;
+                
+                if (!token) {
+                    alert('Authentication token missing. Please log in again.');
+                    return;
+                }
+
+                if (!role) {
+                    alert('Please select an account type (Student/Faculty).');
+                    return;
+                }
+
+                // Gather form data
+                const payload = {
+                    userId: document.getElementById('new-user-id').value,
+                    name: document.getElementById('new-user-name').value,
+                    email: document.getElementById('new-user-email').value,
+                    password: document.getElementById('new-user-password').value,
+                    department: deptInput.value,
+                    role: role,
+                };
+                
+                // Final validation (backend handles role-specific requirements, 
+                // but we check client-side basics)
+                if (Object.values(payload).some(val => !val) && role !== 'student') {
+                    alert('Please fill all fields for the selected role.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/hod/signup`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` // Protected route
+                        },
+                        body: JSON.stringify(payload),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert(`Success: ${data.message}`);
+                        userCreationForm.reset(); // Clear form on success
+                    } else {
+                        // Display error message from the backend (e.g., User ID already exists)
+                        alert(`Creation Failed: ${data.message}`);
+                    }
+                } catch (error) {
+                    console.error('User Creation Error:', error);
+                    alert('A network error occurred. Could not create user.');
+                }
+            }
+
 
             navigateTo('dashboard');
         });
