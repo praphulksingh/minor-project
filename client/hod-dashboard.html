@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOD Dashboard | SPAV-SmartEvent</title>
 <script>
-    // Function to check authentication and authorization
+    // Function to check authentication and authorization (RETAINED)
     const checkAuth = () => {
         const token = localStorage.getItem('authToken');
         const userRole = localStorage.getItem('userRole');
         
-        // This logic is more robust for finding the required role from the filename
         const pageName = window.location.pathname.split("/").pop();
         const requiredRole = pageName.split('-')[0];
 
         if (!token || userRole !== requiredRole) {
-            // Clear any partial login data
             localStorage.removeItem('authToken');
             localStorage.removeItem('userRole');
             
@@ -24,19 +22,17 @@
         }
     };
 
-    // Check the URL to see if we just came from the login page
     const urlParams = new URLSearchParams(window.location.search);
     const fromLogin = urlParams.get('fromLogin');
 
     if (fromLogin === 'true') {
-        // If we just logged in, wait a tiny moment for localStorage to be ready.
-        setTimeout(checkAuth, 50); // 50 milliseconds is plenty of time
+        setTimeout(checkAuth, 50);
     } else {
-        // If the user navigated here directly, check immediately.
         checkAuth();
     }
 </script>
     <style>
+        /* (Style section omitted for brevity - must be copied as is) */
         /* Google Fonts Import */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -265,6 +261,10 @@
             font-weight: 600;
             font-size: 0.8rem;
         }
+        .status-pending { background-color: #fff8e1; color: #f39c12; }
+        .status-approved { background-color: #eaf6ec; color: var(--success-color); }
+        .status-rejected { background-color: #fde2e4; color: var(--danger-color); }
+
         .status-present { background-color: #eaf6ec; color: var(--success-color); }
         .status-absent { background-color: #fde2e4; color: var(--danger-color); }
 
@@ -378,17 +378,17 @@
             <div class="card-grid">
                 <div class="card">
                     <h3>Pending Approvals</h3>
-                    <div class="value">4</div>
+                    <div class="value" id="pending-approvals-value">...</div>
                     <p class="description">Events awaiting your review.</p>
                 </div>
                 <div class="card">
                     <h3>Total Events This Month</h3>
-                    <div class="value">12</div>
+                    <div class="value" id="total-events-value">...</div>
                     <p class="description">Approved events across all faculty.</p>
                 </div>
                 <div class="card">
                     <h3>Overall Attendance</h3>
-                    <div class="value">88%</div>
+                    <div class="value" id="overall-attendance-value">...</div>
                     <p class="description">Average attendance for all events.</p>
                 </div>
             </div>
@@ -406,29 +406,8 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Guest Lecture on DevOps</td>
-                        <td>Prof. Anjali Mehta</td>
-                        <td>Computer Science</td>
-                        <td>2025-09-05</td>
-                        <td>
-                            <button class="btn btn-success">Approve</button>
-                            <button class="btn btn-danger">Reject</button>
-                            <button class="btn btn-info">Details</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Robotics Competition</td>
-                        <td>Prof. Vikram Singh</td>
-                        <td>Mechanical</td>
-                        <td>2025-09-10</td>
-                        <td>
-                            <button class="btn btn-success">Approve</button>
-                            <button class="btn btn-danger">Reject</button>
-                            <button class="btn btn-info">Details</button>
-                        </td>
-                    </tr>
+                <tbody id="approvals-table-body">
+                    <tr><td colspan="5">Loading pending events...</td></tr>
                 </tbody>
             </table>
         </section>
@@ -483,34 +462,18 @@
 
         <section id="attendance" class="content-section">
             <h2>Overall Student Attendance</h2>
+            <p class="description">Attendance records across all department events.</p>
              <table class="data-table">
                 <thead>
                     <tr>
                         <th>Event Name</th>
                         <th>Student Name</th>
-                        <th>Student ID</th>
+                        <th>User ID</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>AI & Machine Learning Workshop</td>
-                        <td>Ravi Kumar</td>
-                        <td>STU12345</td>
-                        <td><span class="status-badge status-present">Present</span></td>
-                    </tr>
-                    <tr>
-                        <td>AI & Machine Learning Workshop</td>
-                        <td>Priya Sharma</td>
-                        <td>STU12346</td>
-                        <td><span class="status-badge status-absent">Absent</span></td>
-                    </tr>
-                    <tr>
-                        <td>Cybersecurity Seminar</td>
-                        <td>Amit Singh</td>
-                        <td>STU12347</td>
-                        <td><span class="status-badge status-present">Present</span></td>
-                    </tr>
+                <tbody id="attendance-table-body">
+                    <tr><td colspan="4">Loading attendance records...</td></tr>
                 </tbody>
             </table>
         </section>
@@ -523,29 +486,12 @@
                     <tr>
                         <th>Event Name</th>
                         <th>Event Date</th>
-                        <th>Attendees</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>AI & Machine Learning Workshop</td>
-                        <td>2025-08-15</td>
-                        <td>120</td>
-                        <td><button class="btn btn-primary">Generate Certificates</button></td>
-                    </tr>
-                     <tr>
-                        <td>Cybersecurity Seminar</td>
-                        <td>2025-07-28</td>
-                        <td>85</td>
-                        <td><button class="btn btn-primary">Generate Certificates</button></td>
-                    </tr>
-                    <tr>
-                        <td>Guest Lecture on Blockchain</td>
-                        <td>2025-07-30</td>
-                        <td>92</td>
-                        <td><button class="btn btn-primary" disabled>Generated</button></td>
-                    </tr>
+                <tbody id="certificates-table-body">
+                    <tr><td colspan="4">Loading approved events...</td></tr>
                 </tbody>
             </table>
         </section>
@@ -575,77 +521,221 @@
     </main>
 
     <script>
-        const API_BASE_URL = 'http://localhost:5000'; // Define API URL
+        const API_BASE_URL = 'http://localhost:5000'; 
+        const API_EVENTS_URL = `${API_BASE_URL}/api/events/hod`; // New HOD endpoint prefix
+        const API_AUTH_URL = `${API_BASE_URL}/api/auth`;
 
-        // Placeholder handler for HOD User Creation (already implemented)
-        async function handleUserCreation(e) {
-            e.preventDefault();
+        const getToken = () => localStorage.getItem('authToken');
 
-            const token = localStorage.getItem('authToken');
-            const role = document.getElementById('new-user-role').value;
-            const deptInput = document.getElementById('new-user-department');
-            
-            if (!token) {
-                alert('Authentication token missing. Please log in again.');
-                return;
-            }
+        // --- FETCH & RENDER FUNCTIONS ---
 
-            if (!role) {
-                alert('Please select an account type (Student/Faculty).');
-                return;
-            }
-
-            // Gather form data
-            const payload = {
-                userId: document.getElementById('new-user-id').value,
-                name: document.getElementById('new-user-name').value,
-                email: document.getElementById('new-user-email').value,
-                password: document.getElementById('new-user-password').value,
-                department: deptInput.value,
-                role: role,
-            };
-            
-            // Final validation
-            if (Object.values(payload).some(val => !val) && role !== 'student') {
-                alert('Please fill all fields for the selected role.');
-                return;
-            }
-
+        async function fetchHODMetrics() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/hod/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` // Protected route
-                    },
-                    body: JSON.stringify(payload),
+                const response = await fetch(`${API_EVENTS_URL}/metrics`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
                 });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('pending-approvals-value').textContent = data.data.pendingApprovals;
+                    document.getElementById('total-events-value').textContent = data.data.totalEventsThisMonth;
+                    document.getElementById('overall-attendance-value').textContent = data.data.overallAttendance;
+                } else {
+                    document.getElementById('pending-approvals-value').textContent = 'N/A';
+                    document.getElementById('total-events-value').textContent = 'N/A';
+                    document.getElementById('overall-attendance-value').textContent = 'N/A';
+                    console.error('Failed to fetch metrics:', data.message);
+                }
+            } catch (error) {
+                console.error('Network error fetching metrics:', error);
+            }
+        }
 
+        async function fetchPendingEvents() {
+            const tbody = document.getElementById('approvals-table-body');
+            tbody.innerHTML = '<tr><td colspan="5">Loading pending events...</td></tr>';
+            
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/approvals`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(`Success: ${data.message}`);
-                    document.getElementById('create-user-form').reset(); // Clear form on success
+                    if (data.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5">No events pending approval.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = data.data.map(event => `
+                        <tr data-event-id="${event._id}">
+                            <td>${event.name}</td>
+                            <td>${event.proposedBy.name} (${event.proposedBy.userId})</td>
+                            <td>${event.department}</td>
+                            <td>${new Date(event.date).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn btn-success action-btn" data-action="approve" data-id="${event._id}">Approve</button>
+                                <button class="btn btn-danger action-btn" data-action="reject" data-id="${event._id}">Reject</button>
+                                <button class="btn btn-info action-btn" data-action="details" data-id="${event._id}">Details</button>
+                            </td>
+                        </tr>
+                    `).join('');
                 } else {
-                    alert(`Creation Failed: ${data.message}`);
+                    tbody.innerHTML = `<tr><td colspan="5">Error: ${data.message}</td></tr>`;
                 }
             } catch (error) {
-                console.error('User Creation Error:', error);
-                alert('A network error occurred. Could not create user.');
+                tbody.innerHTML = `<tr><td colspan="5">Network error fetching events.</td></tr>`;
+                console.error('Network error fetching pending events:', error);
             }
         }
         
-        // Placeholder handler for change password
-        async function handleChangePassword(e) {
+        async function fetchOverallAttendance() {
+            const tbody = document.getElementById('attendance-table-body');
+            tbody.innerHTML = '<tr><td colspan="4">Loading attendance records...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/attendance`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.data.length === 0) {
+                         tbody.innerHTML = '<tr><td colspan="4">No attendance records found for your department.</td></tr>';
+                         return;
+                    }
+                    
+                    tbody.innerHTML = data.data.map(record => `
+                        <tr>
+                            <td>${record.event.name}</td>
+                            <td>${record.student.name}</td>
+                            <td>${record.student.userId}</td>
+                            <td><span class="status-badge ${record.isPresent ? 'status-present' : 'status-absent'}">${record.isPresent ? 'Present' : 'Absent'}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Network error fetching attendance:', error);
+            }
+        }
+
+       async function fetchApprovedEventsForCertificates() {
+    const tbody = document.getElementById('certificates-table-body');
+    tbody.innerHTML = '<tr><td colspan="4">Loading approved events...</td></tr>';
+    
+    try {
+        // FIX: Use the new dedicated listing endpoint
+        const response = await fetch(`${API_EVENTS_URL}/certificates/list`, { 
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+        });
+        const data = await response.json(); 
+
+        if (response.ok) {
+            const events = data.data;
+
+            if (events.length === 0) {
+                 tbody.innerHTML = '<tr><td colspan="4">No approved events found ready for certification.</td></tr>';
+                 return;
+            }
+
+            tbody.innerHTML = events.map(event => `
+                <tr data-event-id="${event._id}">
+                    <td>${event.name}</td>
+                    <td>${new Date(event.date).toLocaleDateString()}</td>
+                    <td><span class="status-badge ${event.certificatesGenerated ? 'status-approved' : 'status-pending'}">${event.certificatesGenerated ? 'Generated' : 'Ready'}</span></td>
+                    <td>
+                        <button class="btn btn-primary certificate-btn" data-id="${event._id}" ${event.certificatesGenerated ? 'disabled' : ''}>
+                            ${event.certificatesGenerated ? 'Generated' : 'Generate Certificates'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
+        }
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="4">Network error fetching certificate events.</td></tr>`;
+        console.error('Network error fetching certificate events:', error);
+    }
+}
+        
+        // --- ACTION HANDLERS ---
+        
+       async function handleApprovalAction(eventId, status) {
+    if (!confirm(`Are you sure you want to ${status} this event?`)) return;
+
+    // --- CRITICAL FIX: Transform status string ---
+    // 'approve' -> 'approved'
+    // 'reject'  -> 'rejected'
+    const backendStatus = status + 'd'; 
+
+    try {
+        const response = await fetch(`${API_EVENTS_URL}/approvals/${eventId}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}` 
+            },
+            // Use the transformed status in the request body
+            body: JSON.stringify({ status: backendStatus }), 
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message);
+            // Refresh dashboard data
+            // These functions rely on having the correct API_EVENTS_URL defined globally
+            fetchPendingEvents(); 
+            fetchHODMetrics();    
+        } else {
+            alert(`Action Failed: ${data.message}`);
+        }
+    } catch (error) {
+        console.error(`Error performing ${status} action:`, error);
+        alert('A network error occurred while updating event status.');
+    }
+}
+
+
+
+
+        async function handleCertificateGeneration(eventId) {
+            if (!confirm('Are you sure you want to generate certificates? This process simulates certificate generation for all present attendees and marks the event as certified.')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/events/hod/certificates/${eventId}`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getToken()}` 
+                    },
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    fetchApprovedEventsForCertificates(); // Refresh the list
+                } else {
+                    alert(`Generation Failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Error generating certificates:', error);
+                alert('A network error occurred while generating certificates.');
+            }
+        }
+
+        // Retained action handlers (Change Password and User Creation)
+        async function handleChangePassword(e) { 
             e.preventDefault();
             
             const currentPassword = document.getElementById('current-password').value;
             const newPassword = document.getElementById('new-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
-            const token = localStorage.getItem('authToken');
+            const token = getToken();
 
             if (newPassword !== confirmPassword) {
-                // Reset password fields if they don't match
                 document.getElementById('new-password').value = '';
                 document.getElementById('confirm-password').value = '';
                 return alert('New Password and Confirm New Password do not match.');
@@ -654,14 +744,10 @@
                 return alert('New password must be at least 6 characters long.');
             }
             
-            // This is the hypothetical backend endpoint
             try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
-                    method: 'PUT', // PUT or PATCH method is standard for updates
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                const response = await fetch(`${API_AUTH_URL}/change-password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ currentPassword, newPassword }),
                 });
 
@@ -669,7 +755,6 @@
 
                 if (response.ok) {
                     alert('Password successfully updated. Please log in with your new password.');
-                    // Force log out after successful password change for security
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('userRole');
                     window.location.href = 'index.html';
@@ -680,8 +765,55 @@
                 console.error('Change Password Error:', error);
                 alert('A network error occurred. Could not change password.');
             }
+         }
+        
+        async function handleUserCreation(e) {
+            e.preventDefault();
+
+            const token = getToken();
+            const role = document.getElementById('new-user-role').value;
+            const deptInput = document.getElementById('new-user-department');
+            
+            if (!token) { alert('Authentication token missing. Please log in again.'); return; }
+            if (!role) { alert('Please select an account type (Student/Faculty).'); return; }
+
+            const payload = {
+                userId: document.getElementById('new-user-id').value,
+                name: document.getElementById('new-user-name').value,
+                email: document.getElementById('new-user-email').value,
+                password: document.getElementById('new-user-password').value,
+                department: deptInput.value,
+                role: role,
+            };
+            
+            if (Object.values(payload).some(val => !val) && role !== 'student') {
+                alert('Please fill all fields for the selected role.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/hod/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`Success: ${data.message}`);
+                    document.getElementById('create-user-form').reset();
+                } else {
+                    alert(`Creation Failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('User Creation Error:', error);
+                alert('A network error occurred. Could not create user.');
+            }
         }
 
+
+        // --- MAIN DOM CONTENT LOADED ---
         document.addEventListener('DOMContentLoaded', function () {
             const navLinks = document.querySelectorAll('.nav-link');
             const contentSections = document.querySelectorAll('.content-section');
@@ -692,14 +824,11 @@
             const userCreationForm = document.getElementById('create-user-form');
             const roleSelect = document.getElementById('new-user-role');
             const deptInput = document.getElementById('new-user-department');
-            
-            if (passwordForm) {
-                passwordForm.addEventListener('submit', handleChangePassword);
-            }
-            
-            if (userCreationForm) {
-                userCreationForm.addEventListener('submit', handleUserCreation);
-                // Logic to conditionally require/disable department field
+
+            // Attach listeners for retained functionality
+            if (passwordForm) { passwordForm.addEventListener('submit', handleChangePassword); }
+            if (userCreationForm) { 
+                userCreationForm.addEventListener('submit', handleUserCreation); 
                 roleSelect.addEventListener('change', () => {
                     const role = roleSelect.value;
                     if (role === 'student' || role === '') {
@@ -709,13 +838,51 @@
                     }
                 });
             }
+            
+            // Event delegation for Approval/Reject actions
+            document.getElementById('approvals').addEventListener('click', (e) => {
+                if (e.target.classList.contains('action-btn')) {
+                    const eventId = e.target.dataset.id;
+                    const action = e.target.dataset.action;
+                    if (action === 'approve' || action === 'reject') {
+                        handleApprovalAction(eventId, action);
+                    } else if (action === 'details') {
+                        alert(`Viewing details for event ID: ${eventId}. (Requires full event data endpoint/modal)`);
+                    }
+                }
+            });
+            
+            // Event delegation for Certificate generation
+            document.getElementById('certificates').addEventListener('click', (e) => {
+                 if (e.target.classList.contains('certificate-btn') && !e.target.disabled) {
+                    const eventId = e.target.dataset.id;
+                    handleCertificateGeneration(eventId);
+                }
+            });
 
+
+            // Function to handle navigation
             function navigateTo(targetId) {
                 navLinks.forEach(link => {
                     link.classList.remove('active');
                     if (link.dataset.target === targetId) {
                         link.classList.add('active');
                         pageTitle.textContent = link.textContent.trim();
+                        // Load data when navigating to a section
+                        switch (targetId) {
+                            case 'dashboard':
+                                fetchHODMetrics();
+                                break;
+                            case 'approvals':
+                                fetchPendingEvents();
+                                break;
+                            case 'attendance':
+                                fetchOverallAttendance();
+                                break;
+                            case 'certificates':
+                                fetchApprovedEventsForCertificates();
+                                break;
+                        }
                     }
                 });
 
@@ -730,7 +897,8 @@
                     sidebar.classList.remove('open');
                 }
             }
-
+            
+            // Event listeners for navigation, mobile toggle, etc. (RETAINED)
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -739,19 +907,18 @@
                 });
             });
 
-            // Event listener for mobile menu toggle
             menuToggle.addEventListener('click', (e) => {
                 e.stopPropagation(); 
                 sidebar.classList.toggle('open');
             });
             
-            // Close sidebar if clicking outside of it on mobile
             document.querySelector('.main-content').addEventListener('click', () => {
                 if (sidebar.classList.contains('open')) {
                     sidebar.classList.remove('open');
                 }
             });
 
+            // Set initial state
             navigateTo('dashboard');
         });
     </script>

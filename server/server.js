@@ -9,6 +9,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth'); // Imports the auth router module
 const hodRoutes = require('./routes/hod');   // Imports the hod router module
+const eventRoutes = require('./routes/eventRoutes');
 
 // --- Connect to MongoDB Database ---
 connectDB();
@@ -29,6 +30,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes); // CORRECT: Mount the module
 // Mount the HOD-specific routes
 app.use('/api/hod', hodRoutes);   // CORRECT: Mount the module
+
+app.use('/api/events', eventRoutes); 
 
 // --- Define the Port ---
 const PORT = process.env.PORT || 5000;

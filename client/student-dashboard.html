@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard | SPAV-SmartEvent</title>
 <script>
-    // Function to check authentication and authorization
+    // Authentication and Authorization Script (RETAINED)
     const checkAuth = () => {
         const token = localStorage.getItem('authToken');
         const userRole = localStorage.getItem('userRole');
         
-        // This logic is more robust for finding the required role from the filename
         const pageName = window.location.pathname.split("/").pop();
         const requiredRole = pageName.split('-')[0];
 
         if (!token || userRole !== requiredRole) {
-            // Clear any partial login data
             localStorage.removeItem('authToken');
             localStorage.removeItem('userRole');
             
@@ -24,21 +22,17 @@
         }
     };
 
-    // Check the URL to see if we just came from the login page
     const urlParams = new URLSearchParams(window.location.search);
     const fromLogin = urlParams.get('fromLogin');
 
     if (fromLogin === 'true') {
-        // If we just logged in, wait a tiny moment for localStorage to be ready.
-        setTimeout(checkAuth, 50); // 50 milliseconds is plenty of time
+        setTimeout(checkAuth, 50);
     } else {
-        // If the user navigated here directly, check immediately.
         checkAuth();
     }
 </script>
 
     <style>
-        /* (Style section omitted for brevity - no changes needed here other than copying the existing styles) */
         /* Google Fonts Import */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -254,7 +248,7 @@
         .btn-warning { background-color: var(--warning-color); color: var(--text-dark); }
         .btn-primary { background-color: var(--primary-color); }
         .btn-danger { background-color: var(--danger-color); }
-
+        
         /* New Password Form Style */
         .password-form-container {
             max-width: 500px;
@@ -277,35 +271,6 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-        }
-        
-        /* --- Responsive Design --- */
-        @media (max-width: 992px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                height: 100%;
-                transform: translateX(-100%);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                padding: 20px;
-            }
-            .main-header h1 {
-                font-size: 1.5rem;
-            }
-            .menu-toggle {
-                display: block;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
     </style>
@@ -371,23 +336,24 @@
             <div class="card-grid">
                 <div class="card">
                     <h3>Registered Events</h3>
-                    <div class="value">5</div>
-                    <p class="description">You are registered for 5 upcoming events.</p>
+                    <div class="value" id="registered-events-value">...</div>
+                    <p class="description">You are registered for upcoming events.</p>
                 </div>
                 <div class="card">
-                    <h3>Attendance</h3>
-                    <div class="value">92%</div>
+                    <h3>Attendance Rate</h3>
+                    <div class="value" id="attendance-rate-value">...</div>
                     <p class="description">Your overall attendance rate.</p>
                 </div>
                 <div class="card">
                     <h3>Certificates Earned</h3>
-                    <div class="value">3</div>
+                    <div class="value" id="certificates-earned-value">...</div>
                     <p class="description">Ready to download from the certificates section.</p>
                 </div>
             </div>
         </section>
 
         <section id="events" class="content-section">
+            <h2>Available Events for Registration</h2>
             <table class="data-table">
                 <thead>
                     <tr>
@@ -398,63 +364,32 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>AI & Machine Learning Workshop</td>
-                        <td>2025-08-15</td>
-                        <td>Computer Science</td>
-                        <td>Open</td>
-                        <td><button class="btn btn-success">Register</button></td>
-                    </tr>
-                    <tr>
-                        <td>InnovateFest 2025</td>
-                        <td>2025-09-01</td>
-                        <td>All Departments</td>
-                        <td>Open</td>
-                        <td><button class="btn btn-success">Register</button></td>
-                    </tr>
-                    <tr>
-                        <td>Robotics Competition</td>
-                        <td>2025-09-10</td>
-                        <td>Mechanical</td>
-                        <td>Full</td>
-                        <td><button class="btn btn-warning" disabled>Full</button></td>
-                    </tr>
+                <tbody id="available-events-table-body">
+                    <tr><td colspan="5">Loading available events...</td></tr>
                 </tbody>
             </table>
         </section>
 
         <section id="registered-events" class="content-section">
+            <h2>My Current Registrations</h2>
              <table class="data-table">
                 <thead>
                     <tr>
                         <th>Event Name</th>
                         <th>Date</th>
                         <th>Department</th>
-                        <th>Registration Status</th>
+                        <th>Approval Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Guest Lecture on Blockchain</td>
-                        <td>2025-07-30</td>
-                        <td>Information Technology</td>
-                        <td>Confirmed</td>
-                        <td><button class="btn btn-danger">Cancel</button></td>
-                    </tr>
-                    <tr>
-                        <td>Annual Sports Meet</td>
-                        <td>2025-08-05</td>
-                        <td>Sports Committee</td>
-                        <td>Confirmed</td>
-                        <td><button class="btn btn-danger">Cancel</button></td>
-                    </tr>
+                <tbody id="my-registered-events-table-body">
+                    <tr><td colspan="5">Loading your registered events...</td></tr>
                 </tbody>
             </table>
         </section>
 
         <section id="attendance" class="content-section">
+            <h2>My Attendance History</h2>
             <table class="data-table">
                 <thead>
                     <tr>
@@ -463,46 +398,24 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Python for Beginners</td>
-                        <td>2025-07-20</td>
-                        <td><span style="color: var(--success-color); font-weight: 600;">Present</span></td>
-                    </tr>
-                     <tr>
-                        <td>Web Development Bootcamp</td>
-                        <td>2025-07-15</td>
-                        <td><span style="color: var(--success-color); font-weight: 600;">Present</span></td>
-                    </tr>
-                    <tr>
-                        <td>Seminar on Cloud Computing</td>
-                        <td>2025-07-10</td>
-                        <td><span style="color: var(--danger-color); font-weight: 600;">Absent</span></td>
-                    </tr>
+                <tbody id="my-attendance-table-body">
+                    <tr><td colspan="3">Loading attendance history...</td></tr>
                 </tbody>
             </table>
         </section>
 
         <section id="certificates" class="content-section">
+            <h2>Download Certificates</h2>
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>Event Name</th>
-                        <th>Issued On</th>
+                        <th>Event Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Python for Beginners</td>
-                        <td>2025-07-22</td>
-                        <td><button class="btn btn-primary">Download</button></td>
-                    </tr>
-                    <tr>
-                        <td>Web Development Bootcamp</td>
-                        <td>2025-07-18</td>
-                        <td><button class="btn btn-primary">Download</button></td>
-                    </tr>
+                <tbody id="certificates-table-body">
+                    <tr><td colspan="3">Loading available certificates...</td></tr>
                 </tbody>
             </table>
         </section>
@@ -532,40 +445,268 @@
     </main>
 
     <script>
-        const API_BASE_URL = 'http://localhost:5000'; // Define API URL
+        const API_BASE_URL = 'http://localhost:5000';
+        const API_EVENTS_URL = `${API_BASE_URL}/api/events/student`; 
+        const API_AUTH_URL = `${API_BASE_URL}/api/auth`;
+
+        const getToken = () => localStorage.getItem('authToken');
         
-        // Placeholder handler for change password
-        async function handleChangePassword(e) {
-            e.preventDefault();
+        // --- FETCH & RENDER FUNCTIONS ---
+
+        async function fetchStudentMetrics() {
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/metrics`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('registered-events-value').textContent = data.data.registeredEvents;
+                    document.getElementById('attendance-rate-value').textContent = data.data.attendanceRate;
+                    document.getElementById('certificates-earned-value').textContent = data.data.certificatesEarned;
+                } else {
+                    console.error('Failed to fetch metrics:', data.message);
+                    document.getElementById('registered-events-value').textContent = 'N/A';
+                    document.getElementById('attendance-rate-value').textContent = 'N/A';
+                    document.getElementById('certificates-earned-value').textContent = 'N/A';
+                }
+            } catch (error) {
+                console.error('Network error fetching metrics:', error);
+            }
+        }
+        
+        async function fetchAvailableEvents() {
+            const tbody = document.getElementById('available-events-table-body');
+            tbody.innerHTML = '<tr><td colspan="5">Loading events...</td></tr>';
+            
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/all`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5">No new events available for registration.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = data.data.map(event => `
+                        <tr data-event-id="${event._id}">
+                            <td>${event.name}</td>
+                            <td>${new Date(event.date).toLocaleDateString()}</td>
+                            <td>${event.department}</td>
+                            <td><span style="color: var(--success-color); font-weight: 600;">Open</span></td>
+                            <td>
+                                <button class="btn btn-success register-btn" data-id="${event._id}">Register</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5">Error: ${data.message}</td></tr>`;
+                }
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="5">Network error fetching events.</td></tr>`;
+                console.error('Network error fetching available events:', error);
+            }
+        }
+
+        async function fetchRegisteredEvents() {
+            const tbody = document.getElementById('my-registered-events-table-body');
+            tbody.innerHTML = '<tr><td colspan="5">Loading your registrations...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/registered`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5">You have no active event registrations.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = data.data.map(event => `
+                        <tr data-registration-id="${event.attendanceId}">
+                            <td>${event.name}</td>
+                            <td>${new Date(event.date).toLocaleDateString()}</td>
+                            <td>${event.department}</td>
+                            <td>${event.status.toUpperCase()}</td>
+                            <td>
+                                <button class="btn btn-danger cancel-btn" data-id="${event.attendanceId}">Cancel</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5">Error: ${data.message}</td></tr>`;
+                }
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="5">Network error fetching registrations.</td></tr>`;
+                console.error('Network error fetching registered events:', error);
+            }
+        }
+
+        async function fetchStudentAttendance() {
+            const tbody = document.getElementById('my-attendance-table-body');
+            tbody.innerHTML = '<tr><td colspan="3">Loading attendance history...</td></tr>';
+            
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/attendance`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">No attendance records found.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = data.data.map(record => {
+                        const statusText = record.isPresent ? 'Present' : 'Absent';
+                        const statusColor = record.isPresent ? 'var(--success-color)' : 'var(--danger-color)';
+
+                        return `
+                            <tr>
+                                <td>${record.event.name}</td>
+                                <td>${new Date(record.event.date).toLocaleDateString()}</td>
+                                <td><span style="color: ${statusColor}; font-weight: 600;">${statusText}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="3">Error: ${data.message}</td></tr>`;
+                }
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="3">Network error fetching attendance.</td></tr>`;
+                console.error('Network error fetching attendance history:', error);
+            }
+        }
+
+      async function fetchCertificates() {
+    const tbody = document.getElementById('certificates-table-body');
+    tbody.innerHTML = '<tr><td colspan="3">Loading available certificates...</td></tr>';
+    
+    try {
+        const response = await fetch(`${API_EVENTS_URL}/certificates`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            if (data.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">No certificates are currently available for download.</td></tr>';
+                return;
+            }
+            
+            // FIX: Data structure is now flat (name, date, _id) due to backend map fix
+            tbody.innerHTML = data.data.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${new Date(item.date).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-primary download-btn" data-id="${item._id}">Download</button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = `<tr><td colspan="3">Error: ${data.message}</td></tr>`;
+        }
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="3">Network error fetching certificates.</td></tr>`;
+        console.error('Network error fetching certificates:', error);
+    }
+}
+        
+        // --- ACTION HANDLERS ---
+        
+        async function handleRegister(eventId) {
+            if (!confirm('Confirm registration for this event?')) return;
+            
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/register/${eventId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Registration successful!');
+                    fetchAvailableEvents();
+                    fetchStudentMetrics();
+                    fetchRegisteredEvents();
+                } else {
+                    alert(`Registration Failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('A network error occurred during registration.');
+            }
+        }
+
+        async function handleCancelRegistration(attendanceId) {
+            if (!confirm('Are you sure you want to cancel your registration for this event?')) return;
+            
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/registered/${attendanceId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    fetchRegisteredEvents();
+                    fetchAvailableEvents();
+                    fetchStudentMetrics();
+                } else {
+                    alert(`Cancellation Failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Cancellation error:', error);
+                alert('A network error occurred during cancellation.');
+            }
+        }
+
+       function handleDownloadCertificate(eventId) {
+    // NOTE: The actual PDF generation endpoint must be implemented on the backend 
+    // at the route: GET /api/events/student/download/certificate/:eventId
+    
+    // This method sends the JWT token in the query string, which is used by the backend
+    // to authenticate the download request before serving the file.
+    window.open(`${API_EVENTS_URL}/download/certificate/${eventId}?token=${getToken()}`, '_blank');
+}
+
+
+        async function handleChangePassword(e) { 
+             e.preventDefault();
             
             const currentPassword = document.getElementById('current-password').value;
             const newPassword = document.getElementById('new-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
-            const token = localStorage.getItem('authToken');
+            const token = getToken();
 
             if (newPassword !== confirmPassword) {
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
                 return alert('New Password and Confirm New Password do not match.');
             }
             if (newPassword.length < 6) {
                 return alert('New password must be at least 6 characters long.');
             }
             
-            // This is the hypothetical backend endpoint
             try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
-                    method: 'PUT', // PUT or PATCH method is standard for updates
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                const response = await fetch(`${API_AUTH_URL}/change-password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ currentPassword, newPassword }),
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Password successfully updated. You will be logged out.');
-                    // Force log out after successful password change for security
+                    alert('Password successfully updated. Please log in with your new password.');
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('userRole');
                     window.location.href = 'index.html';
@@ -576,9 +717,10 @@
                 console.error('Change Password Error:', error);
                 alert('A network error occurred. Could not change password.');
             }
-        }
+         }
 
 
+        // --- MAIN DOM CONTENT LOADED ---
         document.addEventListener('DOMContentLoaded', function () {
             const navLinks = document.querySelectorAll('.nav-link');
             const contentSections = document.querySelectorAll('.content-section');
@@ -587,23 +729,60 @@
             const sidebar = document.getElementById('sidebar');
             const passwordForm = document.getElementById('change-password-form');
             
-            if (passwordForm) {
-                passwordForm.addEventListener('submit', handleChangePassword);
-            }
+            // Attach Password Change Listener
+            if (passwordForm) { passwordForm.addEventListener('submit', handleChangePassword); }
+
+            // Delegation for View Events (Register button)
+            document.getElementById('events').addEventListener('click', (e) => {
+                if (e.target.classList.contains('register-btn')) {
+                    handleRegister(e.target.dataset.id);
+                }
+            });
+
+            // Delegation for My Registered Events (Cancel button)
+            document.getElementById('registered-events').addEventListener('click', (e) => {
+                if (e.target.classList.contains('cancel-btn')) {
+                    handleCancelRegistration(e.target.dataset.id);
+                }
+            });
+
+            // Delegation for Download Certificates
+            document.getElementById('certificates').addEventListener('click', (e) => {
+                if (e.target.classList.contains('download-btn')) {
+                    handleDownloadCertificate(e.target.dataset.id);
+                }
+            });
+
 
             // Function to handle navigation
             function navigateTo(targetId) {
-                // Update active link
                 navLinks.forEach(link => {
                     link.classList.remove('active');
                     if (link.dataset.target === targetId) {
                         link.classList.add('active');
-                        // Update page title
                         pageTitle.textContent = link.textContent.trim();
+                        
+                        // Load data dynamically
+                        switch (targetId) {
+                            case 'dashboard':
+                                fetchStudentMetrics();
+                                break;
+                            case 'events':
+                                fetchAvailableEvents();
+                                break;
+                            case 'registered-events':
+                                fetchRegisteredEvents();
+                                break;
+                            case 'attendance':
+                                fetchStudentAttendance();
+                                break;
+                            case 'certificates':
+                                fetchCertificates();
+                                break;
+                        }
                     }
                 });
 
-                // Show target section and hide others
                 contentSections.forEach(section => {
                     section.classList.remove('active');
                     if (section.id === targetId) {
@@ -611,7 +790,6 @@
                     }
                 });
                 
-                // Close sidebar on mobile after navigation
                 if (window.innerWidth <= 992) {
                     sidebar.classList.remove('open');
                 }
@@ -628,7 +806,6 @@
 
             // Event listener for mobile menu toggle
             menuToggle.addEventListener('click', (e) => {
-                // This is the fix: stop the event from bubbling up to the main content
                 e.stopPropagation();
                 sidebar.classList.toggle('open');
             });

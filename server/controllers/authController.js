@@ -96,3 +96,12 @@ exports.changePassword = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }
 };
+exports.getUserInfo = async (req, res) => {
+    // req.user is populated by the 'protect' middleware
+    if (req.user) {
+        res.status(200).json({ success: true, user: req.user });
+    } else {
+        // This case indicates token verification failed inside the middleware
+        res.status(401).json({ success: false, message: 'Not authorized: Invalid token' });
+    }
+};
