@@ -7,15 +7,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors'); 
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/auth');
-const hodRoutes = require('./routes/hod'); // <--- 1. MUST BE IMPORTED
+const authRoutes = require('./routes/auth'); // Imports the auth router module
+const hodRoutes = require('./routes/hod');   // Imports the hod router module
 
 // --- Connect to MongoDB Database ---
 connectDB();
 
 // --- Initialize Express App ---
-// 🔑 FIX: This line MUST come before any use of 'app'
-const app = express();
+const app = express(); // MUST be here before using 'app.use' or 'app.get'
 
 // --- Middlewares ---
 app.use(cors()); 
@@ -27,9 +26,9 @@ app.get('/', (req, res) => {
 });
 
 // Mount the authentication routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); // CORRECT: Mount the module
 // Mount the HOD-specific routes
-app.use('/api/hod', hodRoutes); // <--- 2. MUST BE MOUNTED BEFORE app.listen
+app.use('/api/hod', hodRoutes);   // CORRECT: Mount the module
 
 // --- Define the Port ---
 const PORT = process.env.PORT || 5000;

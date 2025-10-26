@@ -4,32 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard | SPAV-SmartEvent</title>
-    <!-- <script>
-    // Get the token from localStorage
-    const token = localStorage.getItem('authToken');
-    // Get the role of the logged-in user
-    const userRole = localStorage.getItem('userRole');
-    
-    // Get the role required for this page from its filename
-    // e.g., "student-dashboard.html" -> "student"
-    const requiredRole = window.location.pathname.split('-')[0].replace('/', '');
-
-    // If there is no token OR the user's role doesn't match the page, redirect them.
-    if (!token || userRole !== requiredRole) {
-        alert('Access Denied. Please log in.');
-        // Redirect to the main role selection page
-        window.location.href = 'index.html';
-    }
-   
-    document.getElementById('logout-button').addEventListener('click', () => {
-        // Remove the token and role from storage
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userRole');
-
-        // Redirect to the main page
-        window.location.href = 'index.html';
-    });
-</script> -->
 <script>
     // Function to check authentication and authorization
     const checkAuth = () => {
@@ -64,6 +38,7 @@
 </script>
 
     <style>
+        /* (Style section omitted for brevity - no changes needed here other than copying the existing styles) */
         /* Google Fonts Import */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -280,6 +255,30 @@
         .btn-primary { background-color: var(--primary-color); }
         .btn-danger { background-color: var(--danger-color); }
 
+        /* New Password Form Style */
+        .password-form-container {
+            max-width: 500px;
+            background-color: var(--white-color);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+        .password-form-container .input-group {
+            margin-bottom: 20px;
+        }
+        .password-form-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .password-form-container input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
         /* --- Responsive Design --- */
         @media (max-width: 992px) {
             .sidebar {
@@ -313,7 +312,6 @@
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>Student Portal</h2>
@@ -345,6 +343,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V7c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v10c0 .55-.45-1-1-1zM12 12l-4-4h8l-4 4z"/></svg>
                     </span>Download Certificates</a>
                 </li>
+                <li><a href="#" class="nav-link" data-target="change-password">
+                    <span class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18 9h-7V7h7v2zm-7 7h7v-2h-7v2zM18 13h-7v-2h7v2zM3 17V7c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2zM5 15h4V9H5v6z"/></svg>
+                    </span>Change Password</a>
+                </li>
             </ul>
         </nav>
         <button class="logout-btn" onclick="window.location.href='index.html'">
@@ -355,16 +358,13 @@
         </button>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <header class="main-header">
             <h1 id="page-title">Dashboard</h1>
             <div class="menu-toggle" id="menu-toggle">
-                &#9776; <!-- Hamburger Icon -->
-            </div>
+                &#9776; </div>
         </header>
 
-        <!-- Dashboard Section -->
         <section id="dashboard" class="content-section active">
             <h2>Welcome back, Student!</h2>
             <p class="description" style="margin-bottom: 20px;">Here’s a quick overview of your event activities.</p>
@@ -387,7 +387,6 @@
             </div>
         </section>
 
-        <!-- View Events Section -->
         <section id="events" class="content-section">
             <table class="data-table">
                 <thead>
@@ -425,7 +424,6 @@
             </table>
         </section>
 
-        <!-- My Registered Events Section -->
         <section id="registered-events" class="content-section">
              <table class="data-table">
                 <thead>
@@ -456,7 +454,6 @@
             </table>
         </section>
 
-        <!-- My Attendance Section -->
         <section id="attendance" class="content-section">
             <table class="data-table">
                 <thead>
@@ -486,7 +483,6 @@
             </table>
         </section>
 
-        <!-- Download Certificates Section -->
         <section id="certificates" class="content-section">
             <table class="data-table">
                 <thead>
@@ -510,16 +506,90 @@
                 </tbody>
             </table>
         </section>
+        
+        <section id="change-password" class="content-section">
+            <h2>Change Password</h2>
+            <p class="description" style="margin-bottom: 20px;">Use this form to update your account password.</p>
+            <div class="password-form-container">
+                <form id="change-password-form">
+                    <div class="input-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" required minlength="6">
+                    </div>
+                    <div class="input-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" required minlength="6">
+                    </div>
+                    <div class="input-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Update Password</button>
+                </form>
+            </div>
+        </section>
 
     </main>
 
     <script>
+        const API_BASE_URL = 'http://localhost:5000'; // Define API URL
+        
+        // Placeholder handler for change password
+        async function handleChangePassword(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const token = localStorage.getItem('authToken');
+
+            if (newPassword !== confirmPassword) {
+                return alert('New Password and Confirm New Password do not match.');
+            }
+            if (newPassword.length < 6) {
+                return alert('New password must be at least 6 characters long.');
+            }
+            
+            // This is the hypothetical backend endpoint
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
+                    method: 'PUT', // PUT or PATCH method is standard for updates
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Password successfully updated. You will be logged out.');
+                    // Force log out after successful password change for security
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userRole');
+                    window.location.href = 'index.html';
+                } else {
+                    alert(`Password Change Failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Change Password Error:', error);
+                alert('A network error occurred. Could not change password.');
+            }
+        }
+
+
         document.addEventListener('DOMContentLoaded', function () {
             const navLinks = document.querySelectorAll('.nav-link');
             const contentSections = document.querySelectorAll('.content-section');
             const pageTitle = document.getElementById('page-title');
             const menuToggle = document.getElementById('menu-toggle');
             const sidebar = document.getElementById('sidebar');
+            const passwordForm = document.getElementById('change-password-form');
+            
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', handleChangePassword);
+            }
 
             // Function to handle navigation
             function navigateTo(targetId) {
