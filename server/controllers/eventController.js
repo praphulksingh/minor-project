@@ -608,3 +608,20 @@ exports.downloadCertificate = async (req, res) => {
     
     res.status(404).json({ success: false, message: 'Certificate not found.' });
 };
+exports.getHODEventDetails = async (req, res) => {
+    try {
+        const event = await Event.findOne({ 
+            _id: req.params.eventId, 
+            department: req.user.department // Must be in HOD's department
+        }).populate('proposedBy', 'name userId');
+        
+        if (!event) {
+            return res.status(404).json({ success: false, message: 'Event not found or outside your department.' });
+        }
+
+        res.status(200).json({ success: true, data: event });
+    } catch (error) {
+        console.error('FETCH HOD EVENT DETAILS ERROR:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};

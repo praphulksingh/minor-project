@@ -62,7 +62,7 @@ async function handleLogin(e) {
             localStorage.setItem('userRole', data.user.role);
 
             // Redirect to the correct dashboard
-            alert(data.message); // e.g., "Logged in successfully"
+            //alert(data.message); // e.g., "Logged in successfully"
             window.location.href = `${data.user.role}-dashboard.html?fromLogin=true`;
         } else {
             // Show a specific error message from the server

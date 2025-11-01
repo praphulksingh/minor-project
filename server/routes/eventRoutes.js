@@ -11,6 +11,7 @@ const {
     getOverallAttendance,
     generateCertificates,
     getCertificateListing,
+    getHODEventDetails,
     
     // Faculty Functions
     getFacultyDashboardMetrics,
@@ -45,6 +46,7 @@ router.put('/hod/approvals/:eventId', authorize('hod'), updateEventStatus);
 router.get('/hod/attendance', authorize('hod'), getOverallAttendance);
 router.get('/hod/certificates/list', authorize('hod'), getCertificateListing);
 router.post('/hod/certificates/:eventId', authorize('hod'), generateCertificates);
+router.get('/hod/events/:eventId', authorize('hod'), getHODEventDetails);
 
 
 // =======================================================

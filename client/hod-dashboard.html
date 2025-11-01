@@ -621,84 +621,107 @@
             }
         }
 
-       async function fetchApprovedEventsForCertificates() {
-    const tbody = document.getElementById('certificates-table-body');
-    tbody.innerHTML = '<tr><td colspan="4">Loading approved events...</td></tr>';
-    
-    try {
-        // FIX: Use the new dedicated listing endpoint
-        const response = await fetch(`${API_EVENTS_URL}/certificates/list`, { 
-            headers: { 'Authorization': `Bearer ${getToken()}` },
-        });
-        const data = await response.json(); 
+        async function fetchApprovedEventsForCertificates() {
+            const tbody = document.getElementById('certificates-table-body');
+            tbody.innerHTML = '<tr><td colspan="4">Loading approved events...</td></tr>';
+            
+            try {
+                // Using the dedicated listing endpoint added previously
+                const response = await fetch(`${API_EVENTS_URL}/certificates/list`, { 
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await response.json(); 
 
-        if (response.ok) {
-            const events = data.data;
+                if (response.ok) {
+                    const events = data.data;
 
-            if (events.length === 0) {
-                 tbody.innerHTML = '<tr><td colspan="4">No approved events found ready for certification.</td></tr>';
-                 return;
+                    if (events.length === 0) {
+                         tbody.innerHTML = '<tr><td colspan="4">No approved events found ready for certification.</td></tr>';
+                         return;
+                    }
+
+                    tbody.innerHTML = events.map(event => `
+                        <tr data-event-id="${event._id}">
+                            <td>${event.name}</td>
+                            <td>${new Date(event.date).toLocaleDateString()}</td>
+                            <td><span class="status-badge ${event.certificatesGenerated ? 'status-approved' : 'status-pending'}">${event.certificatesGenerated ? 'Generated' : 'Ready'}</span></td>
+                            <td>
+                                <button class="btn btn-primary certificate-btn" data-id="${event._id}" ${event.certificatesGenerated ? 'disabled' : ''}>
+                                    ${event.certificatesGenerated ? 'Generated' : 'Generate Certificates'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
+                }
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="4">Network error fetching certificate events.</td></tr>`;
+                console.error('Network error fetching certificate events:', error);
             }
-
-            tbody.innerHTML = events.map(event => `
-                <tr data-event-id="${event._id}">
-                    <td>${event.name}</td>
-                    <td>${new Date(event.date).toLocaleDateString()}</td>
-                    <td><span class="status-badge ${event.certificatesGenerated ? 'status-approved' : 'status-pending'}">${event.certificatesGenerated ? 'Generated' : 'Ready'}</span></td>
-                    <td>
-                        <button class="btn btn-primary certificate-btn" data-id="${event._id}" ${event.certificatesGenerated ? 'disabled' : ''}>
-                            ${event.certificatesGenerated ? 'Generated' : 'Generate Certificates'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            tbody.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
         }
-    } catch (error) {
-        tbody.innerHTML = `<tr><td colspan="4">Network error fetching certificate events.</td></tr>`;
-        console.error('Network error fetching certificate events:', error);
-    }
-}
-        
+
         // --- ACTION HANDLERS ---
         
-       async function handleApprovalAction(eventId, status) {
-    if (!confirm(`Are you sure you want to ${status} this event?`)) return;
+        async function handleApprovalAction(eventId, status) {
+            
+            if (status === 'details') {
+                try {
+                    // Call the new detail endpoint
+                    const response = await fetch(`${API_EVENTS_URL}/events/${eventId}`, {
+                        headers: { 'Authorization': `Bearer ${getToken()}` },
+                    });
+                    const data = await response.json();
 
-    // --- CRITICAL FIX: Transform status string ---
-    // 'approve' -> 'approved'
-    // 'reject'  -> 'rejected'
-    const backendStatus = status + 'd'; 
+                    if (response.ok) {
+                        const event = data.data;
+                        alert(
+                            `Event Details:\n` + 
+                            `\nTitle: ${event.name}` + 
+                            `\nDate: ${new Date(event.date).toLocaleDateString()}` + 
+                            `\nDepartment: ${event.department}` + 
+                            `\nProposed By: ${event.proposedBy.name} (ID: ${event.proposedBy.userId})` +
+                            `\nStatus: ${event.status.toUpperCase()}`
+                        );
+                    } else {
+                        alert(`Error fetching details: ${data.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error fetching details:', error);
+                    alert('A network error occurred while fetching event details.');
+                }
+                return; // Exit if it was the detail button
+            }
+            
+            // --- Existing Approve/Reject Logic ---
+            // FIX: Transform status from 'approve' to 'approved'
+            const backendStatus = status + 'd'; 
 
-    try {
-        const response = await fetch(`${API_EVENTS_URL}/approvals/${eventId}`, {
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getToken()}` 
-            },
-            // Use the transformed status in the request body
-            body: JSON.stringify({ status: backendStatus }), 
-        });
+            if (!confirm(`Are you sure you want to ${status} this event?`)) return;
+            
+            try {
+                const response = await fetch(`${API_EVENTS_URL}/approvals/${eventId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getToken()}` 
+                    },
+                    body: JSON.stringify({ status: backendStatus }), 
+                });
 
-        const data = await response.json();
-        if (response.ok) {
-            alert(data.message);
-            // Refresh dashboard data
-            // These functions rely on having the correct API_EVENTS_URL defined globally
-            fetchPendingEvents(); 
-            fetchHODMetrics();    
-        } else {
-            alert(`Action Failed: ${data.message}`);
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    fetchPendingEvents(); 
+                    fetchHODMetrics();    
+                } else {
+                    alert(`Action Failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error(`Error performing ${status} action:`, error);
+                alert('A network error occurred while updating event status.');
+            }
         }
-    } catch (error) {
-        console.error(`Error performing ${status} action:`, error);
-        alert('A network error occurred while updating event status.');
-    }
-}
-
-
 
 
         async function handleCertificateGeneration(eventId) {
@@ -824,7 +847,7 @@
             const userCreationForm = document.getElementById('create-user-form');
             const roleSelect = document.getElementById('new-user-role');
             const deptInput = document.getElementById('new-user-department');
-
+            
             // Attach listeners for retained functionality
             if (passwordForm) { passwordForm.addEventListener('submit', handleChangePassword); }
             if (userCreationForm) { 
@@ -839,16 +862,14 @@
                 });
             }
             
-            // Event delegation for Approval/Reject actions
+            // Event delegation for Approval/Reject/Detail actions (FIXED DELEGATION)
             document.getElementById('approvals').addEventListener('click', (e) => {
                 if (e.target.classList.contains('action-btn')) {
                     const eventId = e.target.dataset.id;
-                    const action = e.target.dataset.action;
-                    if (action === 'approve' || action === 'reject') {
-                        handleApprovalAction(eventId, action);
-                    } else if (action === 'details') {
-                        alert(`Viewing details for event ID: ${eventId}. (Requires full event data endpoint/modal)`);
-                    }
+                    const action = e.target.dataset.action; // 'approve', 'reject', or 'details'
+                    
+                    // FIX: All three buttons now call the single handler
+                    handleApprovalAction(eventId, action); 
                 }
             });
             

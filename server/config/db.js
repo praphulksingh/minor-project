@@ -1,12 +1,14 @@
+// server/config/db.js
+
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
         // Attempt to connect to the database
         const conn = await mongoose.connect(process.env.MONGO_URI, {
-            // These are recommended options to avoid deprecation warnings
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
+            // REMOVED: useNewUrlParser: true,
+            // REMOVED: useUnifiedTopology: true,
+            // These options are now the default behavior and are removed to fix the warnings.
         });
 
         // If connection is successful, log it to the console

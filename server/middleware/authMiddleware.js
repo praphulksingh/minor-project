@@ -24,7 +24,7 @@ exports.protect = async (req, res, next) => {
     
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("JWT Decoded:", decoded);
+        //console.log("JWT Decoded:", decoded);
 
         // Find user by ID and attach to request object
         req.user = await User.findById(decoded.id).select('-password');
@@ -35,7 +35,7 @@ exports.protect = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.error('JWT ERROR:', error);
+        //console.error('JWT ERROR:', error);
         res.status(401).json({ message: 'Not authorized, token failed' });
     }
 };
